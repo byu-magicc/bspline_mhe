@@ -10,7 +10,7 @@ Implement and evaluate continuous-time moving horizon estimation (MHE) in which 
 ### Primary goals
 1. Implement continuous-time state and covariance propagation with discrete EKF measurement updates.
 2. Reuse the C++/pybind11 `UniformBSpline` implementation from [`byu-magicc/bsplines_library`, branch `uniform_development`](https://github.com/byu-magicc/bsplines_library/tree/uniform_development).
-3. Preserve the existing EKF-SLAM class-project implementation as the comparison baseline.
+3. Preserve the original **discrete-time EKF-SLAM** implementation as Baseline A; implement a separate **continuous-discrete JAX/RK4 EKF-SLAM** with zero estimated disturbance as Baseline B, before adding input-spline MHE as Estimator C.
 4. Optimize uniform B-spline coefficients of unknown linear and angular velocity disturbances using an EKF innovation objective over a look-back window.
 5. **Automatically differentiate the complete EKF innovation objective with respect to the spline control points** using JAX.
 6. Quantify robot localization, landmark mapping, disturbance reconstruction, data association, and computation time.
@@ -19,11 +19,19 @@ Implement and evaluate continuous-time moving horizon estimation (MHE) in which 
 ### Estimation architecture and scope
 For each candidate spline coefficient vector, rerun a continuous-discrete EKF over the window, propagating the robot and landmark state and covariance and accumulating innovations. Optimize the disturbance coefficients; do **not** introduce a separate full-state-trajectory MHE optimization at this stage. Maintain a consistent arrival state and covariance at the beginning of each window.
 
-**In scope:** input-spline MHE, uniform unclamped splines, EKF-SLAM, known and nearest-neighbor data association, automatic differentiation, simulation and benchmarks.
+**In scope:** input-spline MHE, uniform unclamped splines, original discrete-time EKF-SLAM (Baseline A), continuous-discrete JAX/RK4 EKF-SLAM (Baseline B), known and nearest-neighbor data association, automatic differentiation, simulation and benchmarks.
 
 **Out of scope:** spline MPC, trajectory planning, output-spline MHE, differential flatness, full nonlinear MHE-SLAM, and window-wide reassociation in the initial implementation.
 
 ## 2. Mathematical Formulation
+
+### 2.0 Three-estimator comparison
+
+- **A — Original discrete-time EKF-SLAM:** preserve the existing class-project estimator and its discrete prediction/covariance model without changing its estimation logic.
+- **B — Continuous-discrete EKF-SLAM:** implement a separate JAX/RK4 estimator using the continuous-time dynamics and continuous covariance propagation below, with `w_v = w_omega = 0` (no spline optimization).
+- **C — Continuous-discrete input-spline MHE-SLAM:** reuse B's dynamics, integration, measurement model, and EKF updates; optimize the spline coefficients for unknown `w_v` and `w_omega` over each look-back window.
+
+**Interpretation:** A vs. C is the practical original-baseline comparison; **B vs. C is the primary comparison for isolating the contribution of input-spline disturbance estimation and moving-window optimization** from changes in time discretization and implementation. Keep measurement opportunities, simulated truth, and observation noise paired. Compare A vs. B separately to quantify effects of changing the prediction model and numerical integration. Align or explicitly document differences in discrete process-noise covariance versus continuous-time noise spectral density; they are not interchangeable.
 
 ### 2.1 Continuous-time SLAM dynamics
 For robot pose `r = [p_x, p_y, theta]^T`, commanded speed `v` and turn rate `omega`, and unknown disturbances `w_v`, `w_omega`:
@@ -98,7 +106,7 @@ The EKF must be rerun for each candidate `c`; innovations and innovation covaria
 - Use the existing `bspline_module.UniformBSpline(d, M).basis_vector(s)` Python binding; **do not reimplement the uniform basis in JAX or Python**.
 - Precompute basis evaluations at fixed integration stage times using the C++ library, then convert them to JAX arrays. The basis values are independent of the optimized coefficients, so differentiation with respect to `c` remains valid. If integration times vary, provide a compatible basis-evaluation strategy without silently breaking differentiation.
 - Implement **RK4 manually in JAX**, not SciPy `solve_ivp`, for the differentiable EKF. Integrate `(xhat, P)` as a coupled tuple/PyTree; recompute dynamics, Jacobians, commanded inputs and spline disturbances at each RK4 stage.
-- Preserve the original EKF-SLAM source unchanged as the reference baseline; build the new estimator separately. Both estimators receive identical simulated truth and measurements in paired comparisons.
+- Preserve the original discrete EKF-SLAM source unchanged as Baseline A. Implement Baseline B (continuous-discrete JAX/RK4 EKF, zero disturbance) separately and reuse its tested propagation/update code for Estimator C (input-spline MHE). All three receive identical simulated truth and measurements in paired comparisons.
 - Use stable linear solves instead of explicit matrix inversion where practical. Check covariance symmetry and numerical consistency.
 - Initially use known associations; later add standard nearest-neighbor associations for both estimators.
 
@@ -117,11 +125,11 @@ The EKF must be rerun for each candidate `c`; innovations and innovation covaria
 - Test `M+d` output dimensions, finite support, partition of unity, time scaling, endpoint handling, and reconstruction of both disturbance channels.
 - **Done when:** known spline coefficients reproduce both injected input functions, and basis arrays work in JAX coefficient differentiation.
 
-### Milestone 3 — Differentiable continuous-discrete EKF
-- Implement continuous robot/landmark dynamics, coupled RK4 propagation of state and covariance, and discrete landmark updates in JAX.
+### Milestone 3 — Differentiable continuous-discrete EKF (Baseline B)
+- Implement continuous robot/landmark dynamics, coupled RK4 propagation of state and covariance, and discrete landmark updates in JAX as an independent **zero-disturbance EKF-SLAM baseline**.
 - Validate RK4 against tractable analytical solutions and step-size refinement; check Jacobians against finite differences.
 - Start with zero disturbance and known associations.
-- **Done when:** state/covariance propagation and updates pass numerical tests and produce stable estimates.
+- **Done when:** state/covariance propagation and updates pass numerical tests, produce stable estimates, and Baseline B can run on the same saved simulation datasets as Baseline A. Document process-noise discretization/continuous-intensity assumptions.
 
 ### Milestone 4 — Fixed-window spline optimization
 - For a single look-back window, rerun the EKF and minimize the innovation objective over spline coefficients.
@@ -135,7 +143,7 @@ The EKF must be rerun for each candidate `c`; innovations and innovation covaria
 - **Done when:** full simulated runs are stable, with interpretable state and disturbance estimates and no numerical failures.
 
 ### Milestone 6 — EKF-SLAM comparison
-- Compare unchanged baseline EKF-SLAM with input-spline MHE on identical simulation datasets.
+- Compare **all three** on identical simulation datasets: A (original discrete EKF-SLAM), B (continuous-discrete zero-disturbance JAX EKF-SLAM), and C (continuous-discrete input-spline MHE). Report A vs. B, B vs. C, and A vs. C; treat B vs. C as the principal isolation of MHE's incremental effect.
 - First use **known** data association; then use **nearest-neighbor** data association in both estimators.
 - **Done when:** accuracy, association outcomes, disturbance reconstruction, and runtime are reproducibly reported, including scenarios in which MHE does not improve performance.
 
@@ -169,9 +177,9 @@ Include at least one test where the true disturbance is **not** generated using 
 - Report means, standard deviations and confidence intervals of key metrics across trials; retain seeds and configurations for reproducibility.
 
 ### Success criteria
-- Both estimators run reproducibly on identical simulated datasets.
+- All three estimators run reproducibly on identical simulated datasets.
 - The input-spline MHE reconstructs identifiable disturbances better than assuming zero disturbance.
-- The MHE improves localization in at least one meaningful model-mismatch scenario; do **not** require it to win in all scenarios.
+- Evaluate whether C improves localization relative to **B** in meaningful model-mismatch scenarios, while also reporting comparison with A; do **not** require it to win in all scenarios or treat improvement over A alone as evidence that the spline-MHE component caused the gain.
 - JAX gradients match finite-difference checks within justified numerical tolerances.
 - Both known- and nearest-neighbor-association comparisons are complete.
 - Accuracy–runtime tradeoffs and failure cases are documented.

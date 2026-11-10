@@ -13,8 +13,18 @@ The initial target is a **simulated EKF-SLAM comparison**. Victoria Park is stri
 - Main repository: `byu-magicc/bspline_mhe`.
 - Spline dependency: `byu-magicc/bsplines_library`, branch **`uniform_development`**, located as a sibling repository (`../bsplines_library`) in the intended local workspace.
 - Reuse the existing C++/pybind11 `bspline_module.UniformBSpline(degree, M)` implementation and `basis_vector(s)`. Do **not** recreate the uniform B-spline basis in Python or JAX.
-- Keep the original class-project EKF-SLAM estimator **unchanged** as a baseline. Add adapters, test harnesses, and instrumentation outside the original implementation. If a baseline change seems necessary, ask first and document it.
+- Keep the original class-project **discrete-time EKF-SLAM** estimator **unchanged** as Baseline A. Add adapters, test harnesses, and instrumentation outside the original implementation. If a baseline change seems necessary, ask first and document it.
+- Implement a separate **continuous-discrete JAX/RK4 EKF-SLAM** with zero estimated disturbance as Baseline B. The input-spline MHE is Estimator C and must reuse B's dynamics, numerical integration, measurement model, and EKF updates.
 - Do not silently modify the sibling spline repository. Propose changes separately if a genuine library defect is found.
+
+## Required three-estimator comparison
+
+- **A:** Original discrete-time EKF-SLAM, preserved unchanged.
+- **B:** Continuous-discrete EKF-SLAM using manually written JAX RK4 for continuous state/covariance propagation and discrete landmark updates; assume `w_v = w_omega = 0`, without spline optimization.
+- **C:** Continuous-discrete input-spline MHE using B's EKF implementation, with spline disturbance coefficients optimized over the look-back window.
+- Benchmark **A vs. B** to characterize effects of changing the numerical propagation/model, **B vs. C** to isolate the incremental contribution of spline-MHE, and **A vs. C** as the overall practical comparison.
+- Use identical saved simulated truth, commands, landmark observations, and noise realizations for all three. Match initial conditions, measurement/association policies, and noise assumptions where possible. Explicitly derive/document any mapping between the original discrete process covariance and continuous process-noise intensity; do not equate them by default.
+- Do not claim an improvement is caused by MHE solely because C beats A; B vs. C is the primary controlled comparison.
 
 ## Mathematical conventions
 
@@ -70,10 +80,10 @@ Use the continuous-discrete EKF: continuous propagation of state and covariance 
 
 1. **EKF-SLAM baseline:** inspect the existing simulation, document motion/measurement models and associations, run reproducibly with fixed seeds, and record errors and timing.
 2. **Spline integration:** build the `uniform_development` pybind11 module; test dimensions, support, partition of unity, scaling, endpoint handling, and both disturbance channels.
-3. **Differentiable EKF:** implement coupled JAX RK4, measurement updates, and numerical tests with zero disturbance and known associations.
+3. **Differentiable EKF / Baseline B:** implement coupled JAX RK4, measurement updates, and numerical tests with zero disturbance and known associations; validate as a standalone estimator on the same replay datasets as Baseline A.
 4. **Fixed-window input-spline optimization:** first use **known landmark locations** and injected known linear/angular disturbances; verify `jax.grad` against finite differences and compare reconstructed inputs with truth, not merely the innovation cost.
 5. **Moving horizon:** shift measurement windows, warm-start spline coefficients, and implement consistent arrival-state/covariance handling without double counting measurements.
-6. **EKF-SLAM benchmarks:** compare with the unchanged baseline on identical simulation datasets, first using known association and then nearest-neighbor association.
+6. **EKF-SLAM benchmarks:** compare A (original discrete EKF), B (continuous-discrete zero-disturbance EKF), and C (input-spline MHE) on identical simulation datasets, first with known association and then nearest-neighbor association; report all three pairwise comparisons.
 
 **Hard gate:** no Victoria Park integration or benchmarking before the simulated MHE and comparison benchmarks are validated.
 
@@ -107,4 +117,4 @@ Use the continuous-discrete EKF: continuous propagation of state and covariance 
 
 ## First assignment
 
-Start with **Milestone 1 only**. Inspect and explain the existing EKF-SLAM simulation, reproduce it with a fixed seed, and establish baseline metrics **without modifying the original estimation logic**. Do not start spline-MHE implementation until this baseline is validated.
+Start with **Milestone 1 only**. Inspect and explain the existing **discrete-time** EKF-SLAM simulation (Baseline A), reproduce it with a fixed seed, and establish baseline metrics **without modifying the original estimation logic**. Baseline B is a separate Milestone 3 deliverable. Do not start spline-MHE implementation until this baseline is validated.
