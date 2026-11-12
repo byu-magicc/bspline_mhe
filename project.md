@@ -45,7 +45,20 @@ For robot pose `r = [p_x, p_y, theta]^T`, commanded speed `v` and turn rate `ome
 \end{aligned}
 ```
 
-The augmented SLAM state is `x = [p_x, p_y, theta, ell_1^T, ..., ell_N^T]^T`. Include additive continuous-time process noise with spectral density `Xi` as appropriate to the modeled states. Discrete landmark measurements satisfy `y_k = h(x(t_k)) + nu_k`, with `nu_k ~ N(0, Sigma_k)`. Use the measurement model and noise conventions of the existing simulation, adapting its discrete motion model to the continuous-time benchmark consistently. Handle heading wrapping and SLAM reference-frame gauge freedom.
+The augmented SLAM state is `x = [p_x, p_y, theta, ell_1^T, ..., ell_N^T]^T`. Discrete landmark measurements satisfy `y_k = h(x(t_k)) + nu_k`, with `nu_k ~ N(0, Sigma_k)`. Use the measurement model and noise conventions of the existing simulation, adapting its discrete motion model to the continuous-time benchmark consistently. Handle heading wrapping and SLAM reference-frame gauge freedom.
+
+**Process-noise decision:** continuous-time process noise enters through the linear and angular velocity inputs. Let `eta = [eta_v, eta_omega]^T` be zero-mean input noise with continuous-time input-noise spectral density `Qc` (a positive semidefinite `2 x 2` matrix). The noise input Jacobian is
+
+```math
+G_r(\theta)=\begin{bmatrix}
+\cos\theta & 0\\
+\sin\theta & 0\\
+0 & 1
+\end{bmatrix},\qquad
+G(x)=\begin{bmatrix}G_r(\theta)\\0_{2N\times2}\end{bmatrix}.
+```
+
+Use `G_r` for robot-only propagation and `G` for the augmented SLAM state; stationary landmarks have no direct process-noise input. The state-space noise intensity is `Xi(x) = G(x) Qc G(x)^T`. The spline disturbances `w_v` and `w_omega` describe unknown inputs in the mean dynamics, while `Qc` describes stochastic input uncertainty. `Qc` is not the original baseline's discrete process covariance; derive and document any mapping before comparing Baselines A and B.
 
 ### 2.2 Unknown-input spline on a look-back window
 At estimation time `t`, use `sigma in [0,L]` as elapsed time from `t-L` and `alpha = M/L`. With two disturbance channels,
@@ -62,9 +75,11 @@ For fixed `c`, initialize `(xhat(t-L), P(t-L))` from the arrival estimate. Betwe
 
 ```math
 \dot{\hat x}=f(\hat x,u,w(c)),\qquad
-\dot P=AP+PA^\top+\Xi,\qquad
+\dot P=AP+PA^\top+GQ_cG^\top,\qquad
 A=\frac{\partial f}{\partial x}(\hat x,u,w(c)).
 ```
+
+Here `Q_c` denotes `Qc` from Section 2.1. Evaluate `A` and `G` at the propagated state at every RK4 stage, together with the commanded inputs and spline disturbances.
 
 At measurement `k`, compute
 
@@ -125,16 +140,96 @@ The EKF must be rerun for each candidate `c`; innovations and innovation covaria
 - Test `M+d` output dimensions, finite support, partition of unity, time scaling, endpoint handling, and reconstruction of both disturbance channels.
 - **Done when:** known spline coefficients reproduce both injected input functions, and basis arrays work in JAX coefficient differentiation.
 
-### Milestone 3 — Differentiable continuous-discrete EKF (Baseline B)
-- Implement continuous robot/landmark dynamics, coupled RK4 propagation of state and covariance, and discrete landmark updates in JAX as an independent **zero-disturbance EKF-SLAM baseline**.
-- Validate RK4 against tractable analytical solutions and step-size refinement; check Jacobians against finite differences.
-- Start with zero disturbance and known associations.
+### Milestone 3 — Differentiable continuous-discrete EKF (Baseline B) (Completed)
+
+The completion gate is satisfied for the saved simulation datasets with known data association. The independent **zero-disturbance EKF-SLAM baseline** is implemented and validated through Stages 3A, 3B.1, and 3B.2. Shared propagation supports spline disturbances for coefficient-gradient validation and later reuse by Estimator C; Baseline B replay runs use `w_v = w_omega = 0` without coefficient optimization.
+
+#### Stage 3A — Differentiable Continuous-Time Propagation (Completed)
+
+- Implement continuous-time unicycle dynamics for the robot pose, with linear and angular velocity disturbances represented using the existing uniform B-spline adapter and coefficient ordering `c = [c_v; c_omega]`.
+- Use continuous-time process noise entering through the linear and angular velocity inputs, with covariance dynamics `P_dot = AP + PA.T + G_r Qc G_r.T` for the robot-only state, following Section 2.1.
+- Implement coupled RK4 state and covariance propagation manually in JAX. Recompute dynamics, Jacobians, noise input Jacobian, commanded inputs, and spline disturbances at every stage using precomputed basis values for the stage times.
+- Validate analytical/JAX Jacobians against finite differences, RK4 convergence against tractable analytical solutions and step-size refinement, covariance propagation, and automatic differentiation with respect to both disturbance coefficient blocks. Check coefficient gradients against central finite differences.
+- Exclude measurement updates and landmark augmentation from Stage 3A.
+- **Completed:** differentiable continuous-time state and covariance propagation using JAX and manually implemented RK4 is validated. See the [Stage 3A validation report](artifacts/milestone3a/report.md).
+
+#### Stage 3B.1 — Differentiable EKF with Known Landmarks (Completed)
+
+- The estimated state contains only robot pose `r = [p_x, p_y, theta]^T` and its `3 x 3` covariance. Landmark coordinates are known and fixed; landmarks are not part of the estimated state.
+- Process range-bearing observations sequentially in their supplied deterministic order. Relinearize at the updated pose and covariance after every measurement; sequential results can differ from a stacked update.
+- Reuse the validated Stage 3A JAX/RK4 propagation and Joseph-form covariance updates. Keep the internal heading unwrapped and wrap bearing innovations to `[-pi, pi)`.
+- Support fixed observation slots with masks for JAX JIT/scan compatibility. Keep known landmark associations fixed during differentiation.
+- Validate automatic differentiation through the complete EKF, including innovations, innovation covariances, Kalman gains, and final pose/covariance, against central finite differences for both B-spline coefficient blocks.
+- **Completed:** all 19 Stage 3B.1 tests passed, along with all 161 Milestone 1, Milestone 2, and Stage 3A regression tests. See the [Stage 3B.1 validation report](artifacts/milestone3b1/report.md) for numerical results, interfaces, and limitations.
+
+#### Stage 3B.2 — Differentiable EKF-SLAM with Unknown Landmarks (Completed)
+
+- Extend the robot state with estimated 2D landmark positions, using a fixed-capacity augmented state with configurable capacity `N_max` (initial default 16) and an active-landmark mask so JAX JIT and scan retain static array shapes.
+- Initially use known data association as a simulation oracle: supplied landmark truth IDs determine whether an observation updates an active landmark or initializes a new landmark. Use the IDs only for association; the estimator must use the measured range-bearing and its uncertainty, not landmark truth coordinates. Process multiple observations at a time in deterministic sequence, so the first occurrence of a new ID initializes a slot and a later occurrence can update it.
+- Initialize a new landmark with the inverse range-bearing model `ell = [p_x, p_y]^T + range * [cos(theta + bearing), sin(theta + bearing)]^T`.
+- Derive the initialization Jacobians with respect to the robot pose and the range-bearing measurement. Use them to compute the new landmark's covariance, its cross-covariance with the robot, and its cross-covariances with every previously active landmark. New measurement noise is independent of prior state uncertainty and other observations; general correlated range-bearing covariance within an observation is supported.
+- Propagate the augmented state and full covariance using the continuous-time dynamics and input-noise covariance formulation established in Stage 3A. Stationary landmarks have zero direct dynamics and zero direct process-noise input.
+- Use sequential range-bearing EKF updates and Joseph covariance updates for active known landmarks. Keep the association and landmark-initialization decisions fixed while differentiating.
+- Preserve automatic differentiation with respect to both B-spline disturbance coefficient blocks through propagation, measurement updates, and landmark initialization for those fixed decisions.
+- Ensure inactive landmark slots do not affect active-state estimates, innovations, covariance updates, or reported metrics. Initialize inactive state storage and covariance rows/columns neutrally, keep inactive cross-covariances zero, and mask inactive columns in measurement Jacobians. Inactive storage must not add artificial uncertainty or correlations to the active state.
+- Validate covariance augmentation against independent numerical references. Check initialization Jacobians, landmark marginal covariance and cross-covariances, symmetry, and positive semidefiniteness on the active covariance subspace; check inactive storage separately. Compare coefficient gradients against central finite differences.
+- Validate continuous-discrete EKF-SLAM as Baseline B on the same saved simulation datasets used for Baseline A, initially with known association and zero estimated disturbance.
+- **Completed:** 14 SLAM tests, four replay tests, and 180 regression tests passed. Baseline B runs exactly reproducibly across two repeats on the saved seed-7, 500-step datasets in both clean (`original`) and noisy observation modes, with known associations and zero estimated disturbance. See the [Stage 3B.2 validation report](artifacts/milestone3b2/report.md) for numerical results, covariance checks, command/process-noise mapping, replay metrics, and runtime.
+
+**Fixed-capacity covariance checks:** the active covariance subspace is the robot block together with the blocks for active landmarks. Evaluate its symmetry and eigenvalues separately from inactive storage. Inactive covariance rows/columns should remain zero, so zero eigenvalues in the padded full matrix are expected and must not be treated as negative active-subspace eigenvalues or artificial uncertainty.
+
+**Implemented Stage 3B.2 policies:** capacity exhaustion preserves existing landmarks and returns an explicit overflow status from compiled code, with an informative exception at the Python boundary. Active-subspace covariance checks use maximum asymmetry `1e-10` and minimum eigenvalue at least `-1e-10`; inactive storage is checked separately for exact zero. Measurement-noise independence and the configurable default capacity are documented above.
+
 - **Done when:** state/covariance propagation and updates pass numerical tests, produce stable estimates, and Baseline B can run on the same saved simulation datasets as Baseline A. Document process-noise discretization/continuous-intensity assumptions.
 
+**Completion scope:** this gate covers the saved simulation datasets with known associations. Monte Carlo comparison benchmarks, nearest-neighbor association, MHE optimization, and Victoria Park validation remain future work under the later milestones and simulation gate.
+
 ### Milestone 4 — Fixed-window spline optimization
-- For a single look-back window, rerun the EKF and minimize the innovation objective over spline coefficients.
-- **Required intermediate test:** use **known landmark locations** and known injected linear/angular disturbances before full SLAM. Compare reconstructed disturbances against ground truth, not just reduced innovation cost.
-- Verify `jax.grad` against finite differences, and investigate observability/identifiability if reconstruction fails.
+
+Implement fixed-window input-spline MHE in three stages, validating the objective before adding optimization and validating known-landmark disturbance reconstruction before full SLAM. Use the formulation in Section 2 unchanged. `Qc` remains the configured continuous-time stochastic input-noise spectral density; the deterministic spline coefficients represent the unknown mean disturbances and do not replace `Qc`.
+
+#### Stage 4A — Fixed-Window Innovation Objective (Planned)
+
+- Use a single fixed estimation window of length `L` and the existing Stage 3B.1 known-landmark EKF. Represent both input disturbances with the existing uniform, unclamped B-spline adapter, degree `d`, segment count `M`, and coefficient ordering `c = [c_v; c_omega]`.
+- Keep the arrival state and covariance at the beginning of the window fixed for every candidate coefficient vector and during later optimization. Rerun the complete continuous-discrete EKF over the window for each candidate `c`.
+- Define the Section 2.4 innovation-quadratic objective, with `e_k` denoting that section's innovation `r_k`:
+
+  ```math
+  J(c)=\sum_{k\in\mathcal V}e_k(c)^\top S_k(c)^{-1}e_k(c).
+  ```
+
+  where `V` contains only valid measurement updates. Exclude masked and invalid observations and their placeholder diagnostics. Use stable linear solves. Do not add a log-determinant term or coefficient regularization in the initial implementation.
+- Preserve sequential measurement updates and fixed known landmark associations. Differentiate through state propagation, covariance propagation, innovations, innovation covariances, Kalman gains, and measurement updates with JAX.
+- Validate the objective against independent numerical calculations, verify correct accumulation of valid measurement contributions, and compare gradients for both coefficient blocks against central finite differences in float64.
+- Stage 4A implements objective evaluation and differentiation only; coefficient optimization starts in Stage 4B.
+
+**Initial validation scenario:** generate a new continuous-time unicycle simulation with known landmark positions and constant injected disturbances `w_v(t)=a`, `w_omega(t)=b`. Use directly specified continuous-time commanded linear and angular velocities, rather than the saved Baseline A rotation-translation-rotation commands. Retain fixed random seeds, the measurement-noise model and realization, and the experiment configuration for reproducibility.
+
+**Stage 4A completion criterion:** the innovation objective is reproducible, correctly accumulates valid measurement contributions, and its JAX gradients agree with central finite differences for both coefficient blocks.
+
+#### Stage 4B — B-Spline Coefficient Optimization (Planned)
+
+- Extend the validated Stage 4A objective using SciPy gradient-based optimization with JAX-computed objective values and gradients. Optimize both linear and angular velocity disturbance coefficient blocks while preserving the fixed arrival prior and known associations.
+- Begin with constant injected disturbances, then extend to smooth time-varying disturbances. Use the zero-disturbance coefficient vector as the initial optimization guess for the first experiment.
+- Compare the optimized objective with its zero-disturbance value. Compare reconstructed disturbance functions with the known injected disturbances using separate RMSE metrics for linear and angular velocity; also evaluate localization accuracy and optimizer convergence.
+- Investigate coefficient identifiability using the Jacobian of the stacked innovation sequence with respect to the coefficients, including singular-value analysis when disturbance reconstruction is poor. Reduced innovation cost alone does not establish correct disturbance reconstruction.
+- After the initial controlled tests, investigate spline degree, segment count, window length, and measurement frequency.
+- Do not add regularization or alter the objective without first documenting the mathematical motivation and validation results.
+
+**Stage 4B completion criterion:** the optimizer converges reliably in controlled tests and reconstructs identifiable linear and angular velocity disturbances, with documented limitations and failure cases.
+
+#### Stage 4C — Fixed-Window MHE-SLAM (Planned)
+
+- Extend the validated fixed-window optimization to the Stage 3B.2 augmented EKF-SLAM, reusing its fixed-capacity state, landmark initialization, covariance augmentation, and sequential Joseph measurement updates.
+- Initially use known data association with fixed landmark truth IDs. Optimize the spline disturbance coefficients while rerunning the augmented EKF-SLAM over the fixed window.
+- Keep the arrival state, arrival covariance, measurement sequence, association assignments, and initialization decisions fixed during each differentiable optimization. Preserve automatic differentiation through landmark initialization, propagation, covariance augmentation, and measurement updates for both coefficient blocks.
+- Compare fixed-window MHE-SLAM against Baseline B on identical simulated truth, commanded inputs, and measurements. Report localization, landmark estimation, disturbance reconstruction, objective reduction, gradient accuracy, and computation time, separating compilation from steady-state execution.
+- Stage 4C excludes moving-window shifting, arrival-cost updates, nearest-neighbor association, and Victoria Park integration. Moving-horizon management remains Milestone 5; comparative Monte Carlo and nearest-neighbor benchmarks remain Milestone 6.
+
+**Stage 4C completion criterion:** the fixed-window spline optimizer runs successfully through the augmented EKF-SLAM and produces reproducible, interpretable estimation results with validated gradients.
+
+**Stage 4 design questions to resolve before the affected implementation:** select the initial continuous-time experiment configuration (`L,d,M,a,b`, commands, landmark geometry, arrival prior, `Qc`, measurement covariance, and observation times); define how coefficient candidates that change geometric measurement validity are handled while retaining the valid-update-only objective; and document Stage 4C window-boundary/initialization measurement accounting so the arrival prior, landmark initialization, and innovation cost do not reuse information inadvertently. These choices must not silently alter the Section 2.4 objective or introduce regularization.
+
 - **Done when:** the optimizer converges reliably and reconstructs identifiable disturbances in controlled tests.
 
 ### Milestone 5 — Moving-horizon implementation

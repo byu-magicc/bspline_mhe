@@ -125,9 +125,53 @@ This is not part of the initial input-spline MHE implementation.
 
 ## Project Status
 
-**Status: Planning complete — implementation pending.**
+**Status: Milestone 1 fixed-seed Estimator A reproduction validated. Estimators B and C remain pending.**
 
-The initial development priority is reproducing the existing EKF-SLAM simulation and establishing a validated baseline.
+The original EKF-SLAM simulation has a reproducible baseline; subsequent milestones remain subject to the validation gates in `project.md`.
+
+The Estimator A reproduction harness preserves the original discrete EKF-SLAM source and runs separate original-observation and stored-noisy-observation replays, with known and nearest-neighbor association:
+
+```sh
+python3 -B -m benchmarks.estimator_a --seed 7 --steps 500 --repeats 3 --output artifacts/milestone1
+python3 -B -m pytest -q tests/test_estimator_a.py
+```
+
+Tested dependencies are listed in `requirements-baseline.txt`. The generated [Milestone 1 report](artifacts/milestone1/report.md) records results, replay instructions, metric definitions, provenance, and legacy limitations. Estimator B (continuous-discrete JAX/RK4 EKF) and Estimator C (input-spline MHE) remain later milestones as defined in `project.md`.
+
+### Inspect a saved replay
+
+The external viewer adapts the original Matplotlib animation layout and reuses its robot and covariance drawing helpers. It reads saved datasets and estimator results without running simulation or estimation, so playback does not affect benchmark timing.
+
+```sh
+python3 -B -m benchmarks.visualize_estimator_a --mode noisy --association nn --backend QtAgg
+python3 -B -m benchmarks.visualize_estimator_a --mode original --association known --backend QtAgg
+```
+
+`--mode original` selects the original clean-observation experiment; `--mode noisy` selects the corrected stored-noisy-observation replay. Both support `--association known` and `--association nn`. Defaults read `artifacts/milestone1/`; use `--dataset path/to/dataset.npz` for another directory, or `--replay path/to/results.npz` to select an explicit result (its metadata determines the mode and association). The adapter rejects inconsistent observations, frame counts, and track indices.
+
+Use the **frame slider**, **Play/Pause**, **Previous/Next**, and **Next issue** buttons. Keyboard controls are **Space** to play/pause, **Left/Right** to step and pause, **Home/End** to go to the first/last frame, and **N** to jump to the next incorrect match or duplicate initialization (wrapping at the end). Playback stops at the last frame; Play then restarts from the beginning. Frame indices start at zero; displayed step numbers start at one. `--interval-ms` changes playback speed; `--frame` selects the initial frame.
+
+The map shows executed and estimated paths through the current frame, both robot positions/headings, true landmarks, and active estimated tracks. Labels `Tj/Li` identify track index `j` and its initialization truth ID `i`. Duplicate tracks are magenta. Current measurements are green for correct matches, red for incorrect matches, blue for new landmarks, magenta for duplicate initialization, and gray for rejection or unavailable association. The side panel reports time, position error, signed wrapped heading error, track counts, and each observation's true ID, selected track, birth ID, and status. Matplotlib's toolbar provides pan/zoom for inspecting crowded duplicate tracks.
+
+Solid rays project the consumed range/bearing from the true pose; dotted rays project it from the estimated pose; dashed links connect the estimated endpoint to the selected track. These use recorded posterior poses, **not** the EKF's pre-correction innovations. Match correctness uses immutable track birth IDs, as in the benchmark metrics; those labels cannot guarantee that a track remains unmixed after wrong associations. Track labels and counts only include landmarks initialized by the current frame.
+
+Interactive playback needs a Matplotlib GUI backend; `QtAgg` uses an optional Qt binding such as PyQt5. Omit `--backend` to use your configured backend. For a headless inspection image:
+
+```sh
+python3 -B -m benchmarks.visualize_estimator_a --mode noisy --association nn --frame 22 --snapshot /tmp/noisy_nn_frame22.png
+python3 -B -m pytest -q tests/test_visualize_estimator_a.py
+```
+
+An example [incorrect-association frame](artifacts/visualization/noisy_nn_incorrect.png) is retained for inspection. The original `simSLAM.run` live plotting and `-g` GIF export remain unchanged; the replay viewer adds controls outside that estimation loop.
+
+### Diagnose landmark initializations
+
+```sh
+python3 -B -m benchmarks.diagnose_initializations
+python3 -B -m pytest -q tests/test_diagnose_initializations.py
+```
+
+This external tool replays the saved seed-7, 500-step noisy NN experiment and observes the original association function's candidate calculations without changing its code, threshold, or decisions. It records every initialization, prior tracks sharing its truth ID, the triggering observation and robot pose, candidate innovations/covariances/distances, and the gate outcome. The [chronological Markdown report](artifacts/milestone1/landmark_initializations.md) and [JSON audit](artifacts/milestone1/landmark_initializations.json) include per-landmark duplicate counts and checks that diagnostics-enabled and diagnostics-disabled numerical results exactly match the saved replay. Diagnostic timings include tracing overhead and do not replace baseline timings. Run outside debugger/coverage tracing sessions. `--dataset`, `--replay`, and `--output` override artifact paths; no simulation is regenerated.
 
 ## References
 

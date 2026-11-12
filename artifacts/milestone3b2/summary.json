@@ -1,0 +1,127 @@
+{
+  "cases": {
+    "noisy": {
+      "association_correctness": 1.0,
+      "association_coverage": 0.992,
+      "capacity": 16,
+      "compile_seconds": 0.0006892500096000731,
+      "estimator": "B",
+      "estimator_seconds_per_replay": [
+        0.11284878692822531,
+        0.11258929237374105
+      ],
+      "exact_replays": true,
+      "heading_rmse_rad": 0.057545694812265215,
+      "initialized": 8,
+      "invalid": 0,
+      "landmark_rmse": 16.862017205055654,
+      "mapped_landmark_count": 8,
+      "max_active_covariance_asymmetry": 7.673861546209082e-13,
+      "max_inactive_storage": 0.0,
+      "mean_nis": 1.9339656691269662,
+      "mean_robot_nees": 2.303023587101518,
+      "mean_update_ms": 0.22543807930196635,
+      "min_active_covariance_eigenvalue": 0.00010807590328935888,
+      "mode": "noisy",
+      "observations": 1000,
+      "overflow": 0,
+      "p95_update_ms": 0.23779410257702693,
+      "position_rmse": 10.151190513315749,
+      "repeats": 2,
+      "unique_mapped_truth_count": 8,
+      "updated": 992,
+      "used_observation_fraction": 1.0
+    },
+    "original": {
+      "association_correctness": 1.0,
+      "association_coverage": 0.992,
+      "capacity": 16,
+      "compile_seconds": 0.5705897090083454,
+      "estimator": "B",
+      "estimator_seconds_per_replay": [
+        0.11354192087310366,
+        0.11256868901546113
+      ],
+      "exact_replays": true,
+      "heading_rmse_rad": 0.030846340877390837,
+      "initialized": 8,
+      "invalid": 0,
+      "landmark_rmse": 1.177079802490511,
+      "mapped_landmark_count": 8,
+      "max_active_covariance_asymmetry": 1.5631940186722204e-12,
+      "max_inactive_storage": 0.0,
+      "mean_nis": 0.03925076948152594,
+      "mean_robot_nees": 0.4804514954626829,
+      "mean_update_ms": 0.2261106098885648,
+      "min_active_covariance_eigenvalue": 0.00010807598944730919,
+      "mode": "original",
+      "observations": 1000,
+      "overflow": 0,
+      "p95_update_ms": 0.24448396870866415,
+      "position_rmse": 2.8886315096706543,
+      "repeats": 2,
+      "unique_mapped_truth_count": 8,
+      "updated": 992,
+      "used_observation_fraction": 1.0
+    }
+  },
+  "config": {
+    "alphas": [
+      0.0025000000000000005,
+      1e-06,
+      0.0025000000000000005,
+      0.0001
+    ],
+    "betas": [
+      10,
+      0.17453292519943295
+    ],
+    "delta_t": 0.1,
+    "fov": 3.141592653589793,
+    "initial_covariance": [
+      [
+        0.001,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.001,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.001
+      ]
+    ],
+    "initial_pose": [
+      180,
+      50,
+      0
+    ],
+    "max_observations": 2,
+    "seed": 7,
+    "selection": "fov",
+    "steps": 500
+  },
+  "dataset": "artifacts/milestone1/dataset.npz",
+  "dataset_sha256": "1d5bef521c151ce1c3785f5317825ac67d4e94d0b79eff13398ae1bfff1a8f28",
+  "jax": "0.4.35",
+  "jax_enable_x64": true,
+  "numpy": "2.0.2",
+  "phase_duration_fractions": [
+    0.25,
+    0.5,
+    0.25
+  ],
+  "platform": "macOS-14.7.6-arm64-arm-64bit",
+  "python": "3.12.6 (main, Sep  6 2024, 19:03:47) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "source_sha256": {
+    "benchmarks/estimator_b.py": "6d1337f4052f16a451d1727be116b3f624a044da65bfd54e9ad823f59d42b765",
+    "estimation/slam.py": "2f685b4658e58c6e0b7b3d06476364e20d0c951a97477542440e547dfdaebce1",
+    "models/slam.py": "d6cb521b062ccee17ce9b8b108841480459672242019ee26492e001597d8056f",
+    "tests/test_estimator_b.py": "d9331b1f14c8c5e087e4c3c5c7bc35e1d210f6d18c9f5692339a72ff3b766adf",
+    "tests/test_slam.py": "ad87799175a80706f8ffdce4dbf10d97039e823dddbe1b0389ce08ea609d2aa1"
+  }
+}

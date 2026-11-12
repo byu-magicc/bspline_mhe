@@ -1,0 +1,17 @@
+{
+  "dataset_archive_sha256_identical": true,
+  "experiment_command": "python3 -B -m benchmarks.estimator_a --seed 7 --steps 500 --repeats 3 --output artifacts/milestone1",
+  "fresh_process_command": "python3 -B -m benchmarks.estimator_a --dataset artifacts/milestone1/dataset.npz --repeats 3 --output /private/tmp/estimator-a-replay-z9e6gb2w",
+  "fresh_process_exact_numerical_arrays": {
+    "noisy_known": true,
+    "noisy_nn": true,
+    "original_known": true,
+    "original_nn": true
+  },
+  "legacy_git_diff_command": "git diff --exit-code -- baseline/ekf_slam",
+  "legacy_git_diff_exit_code": 0,
+  "source_hashes_match_delivered_source": true,
+  "test_command": "python3 -B -m pytest -q tests/test_estimator_a.py",
+  "test_result": "21 passed in 11.83s",
+  "timing_arrays_excluded_from_reproducibility_comparison": true
+}
