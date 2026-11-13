@@ -1,0 +1,102 @@
+{
+  "current_test_execution": {
+    "command": "PYTHONPATH=build/bsplines_library python3 -B -m pytest -q --junitxml=/tmp/stage4a_hardening_pytest.xml -o junit_family=legacy",
+    "exit_code": 0,
+    "passed": 233,
+    "elapsed_seconds": 119.5753432920028,
+    "recorded_at_utc": "2026-11-12T23:08:30.645111+00:00",
+    "scope": "complete repository suite",
+    "stdout": "........................................................................ [ 30%]\n........................................................................ [ 61%]\n........................................................................ [ 92%]\n.................                                                        [100%]\n------------ generated xml file: /tmp/stage4a_hardening_pytest.xml -------------\n233 passed in 115.73s (0:01:55)\n"
+  },
+  "independent_test_numerical_results": {
+    "test_nonconstant_analytic_trajectory_innovations_and_cost[0-linear]": {
+      "state_max_abs_error": 4.440892098500626e-16,
+      "innovation_max_abs_error": 2.237793284010081e-16,
+      "objective_abs_error": 2.7755575615628914e-16,
+      "incorrect_time_scaling_objective_error": 0.8920395785201098
+    },
+    "test_nonconstant_analytic_trajectory_innovations_and_cost[0-angular]": {
+      "state_max_abs_error": 2.220446049250313e-16,
+      "innovation_max_abs_error": 3.191891195797325e-16,
+      "objective_abs_error": 3.3861802251067274e-15,
+      "incorrect_time_scaling_objective_error": 10.4848534169823
+    },
+    "test_nonconstant_analytic_trajectory_innovations_and_cost[1-linear]": {
+      "state_max_abs_error": 8.881784197001252e-16,
+      "innovation_max_abs_error": 8.881784197001252e-16,
+      "objective_abs_error": 2.220446049250313e-16,
+      "incorrect_time_scaling_objective_error": 0.8920395785201123
+    },
+    "test_nonconstant_analytic_trajectory_innovations_and_cost[1-angular]": {
+      "state_max_abs_error": 4.440892098500626e-16,
+      "innovation_max_abs_error": 2.220446049250313e-16,
+      "objective_abs_error": 2.609024107869118e-15,
+      "incorrect_time_scaling_objective_error": 10.484853416982334
+    },
+    "test_innovation_and_covariance_gradient_decomposition_both_blocks": {
+      "candidate_0_max_abs_error": 1.4210854715202004e-14,
+      "candidate_0_linear_covariance_gradient_norm": 0.39193664014304114,
+      "candidate_0_angular_covariance_gradient_norm": 0.021982720082895445,
+      "candidate_1_max_abs_error": 3.58046925441613e-15,
+      "candidate_1_linear_covariance_gradient_norm": 0.062105743235671154,
+      "candidate_1_angular_covariance_gradient_norm": 0.03922204397355662
+    }
+  },
+  "preservation": {
+    "protected_tracked_file_count": 31,
+    "changed_protected_files": [],
+    "protected_sha256": {
+      "artifacts/milestone1/dataset.npz": "1d5bef521c151ce1c3785f5317825ac67d4e94d0b79eff13398ae1bfff1a8f28",
+      "artifacts/milestone1/landmark_initializations.json": "6f379ef715e199813044cb90119f9bcd65a841459ebe78b6280b3b31761b48b5",
+      "artifacts/milestone1/landmark_initializations.md": "ccc86a62da54bcdaa77b45a77abc9506d582431b00a1a9c9a5b6a93ffe58b1f9",
+      "artifacts/milestone1/noisy_known.npz": "5a302226571ca97ecbfea85ea13ccd32a840ade914c74e556728b81668bbf5b4",
+      "artifacts/milestone1/noisy_nn.npz": "4a4c9d089af9bb287a822648f0528712e0ecde1a291f003299a5b2e09b750171",
+      "artifacts/milestone1/original_known.npz": "a7d9151db510068ad2f9e911f9c71113cc554a58125dc6a9a00af82cf2f76e2d",
+      "artifacts/milestone1/original_nn.npz": "a44e1a6c58e79cee08cde0c6735d2e0349f136997717d724d4fa3e52cf6567c7",
+      "artifacts/milestone1/report.md": "cde297544042eea86edee201ca4fe16c9ec562a21563df8364a05926b523537d",
+      "artifacts/milestone1/summary.json": "974b0365b329c0b296bb3c8be7b801a97c68d5d111842e681a550c662b7bf16d",
+      "artifacts/milestone1/trajectories_known.png": "d3cd074b06f741323fea536bd07d3895c2022074f22c2d2dace80e65ccb7b116",
+      "artifacts/milestone1/trajectories_nn.png": "46179260df79e50a218f2944dffc8ff7ea404ea5e2d6e5732b546efb8bc0becf",
+      "artifacts/milestone1/validation.json": "fb7eec85d4145cec60bfccccfa86e60a261e2e043b509ae566bb608234ad4007",
+      "artifacts/milestone3a/report.md": "f2c55f44857da1a03a56e8f4d8b00d9a7b256949c900a1a3d13fb6dc62740614",
+      "artifacts/milestone3b1/report.md": "a75434214d6e4afe55cb4f64c0b410addfd4d38de19a45eca2d0b093627d3fa3",
+      "artifacts/milestone3b2/noisy_known.npz": "d25a75bfca3f4b7e167c8ced467156b09f43562014c4c9de8022bca234c9b017",
+      "artifacts/milestone3b2/original_known.npz": "55b51f3673e0df5cdd622f02097b96950c59c02caa0680a1b7d91bb9a3bf6364",
+      "artifacts/milestone3b2/report.md": "1a09ae3f57d6e43c6b8d629095d8727fc010b0b32b839f80755052cf9a417c9d",
+      "artifacts/milestone3b2/summary.json": "4cc0a7107fba15bda60ad2bbec31cd9866cd10675e31da6e68e231fa1a3e11aa",
+      "baseline/.DS_Store": "b7299603e1e0e45a274f00650561c7594fe327dd51c8df84562dafb39112db47",
+      "estimation/README.md": "1022b2c140ae2995d030e1b883b4eb62f595a642b669f169e47ff9be348125f2",
+      "estimation/__init__.py": "3e4c45e6f4a0a0bd6f254101c2ba81c4b502511207ebb3d96a9e390a5c9d6dd5",
+      "estimation/known_landmark_ekf.py": "5d1775ab9867bf89a6e0cf5858b74f4f3ebfe52b74b41eea4989a16b4c054f19",
+      "estimation/propagation.py": "5c08383e12f30f0fa7a6770610677c429f78f33f330ea0d3f69a9cb090d08570",
+      "estimation/slam.py": "2f685b4658e58c6e0b7b3d06476364e20d0c951a97477542440e547dfdaebce1",
+      "models/__init__.py": "ced2d998add0f957329d36d8276fc52d3c4d19b7dd0cf8f4530dd6ff470938c4",
+      "models/range_bearing.py": "12dd305de44f11eb220db20dd1070db20117dfe4c3ce93c00d4dfcb92b14e4d6",
+      "models/slam.py": "d6cb521b062ccee17ce9b8b108841480459672242019ee26492e001597d8056f",
+      "models/unicycle.py": "4d5dde951b9ded1dc1cb73b502f71d74ba1c67964c079d0786452529044a4b39",
+      "splines/README.md": "22164a83327705fb0d595020ea0c699f66420f75e393c205adb2e07527e278c0",
+      "splines/__init__.py": "7dab4caa1e45df146037c2c8c5a9b49be8a2e02f2aa8a324bea6328551a0f55c",
+      "splines/uniform_basis.py": "d5719047549f8dea2de9b31627011d2692d6f6d54fa69829882bcb1a48f0058b"
+    },
+    "baseline_submodule_status": "",
+    "spline_repository_status": ""
+  },
+  "original_result_maximum_absolute_differences": {
+    "zero": {
+      "innovation_quadratic": 2.6716406864579767e-12,
+      "logdet_diagnostic": 0.0,
+      "gaussian_diagnostic": 2.7284841053187847e-12,
+      "final_pose": 8.881784197001252e-16,
+      "final_covariance": 2.1006417091906648e-19,
+      "final_pose_error_x_y_heading": 1.7763568394002505e-15
+    },
+    "true": {
+      "innovation_quadratic": 1.4779288903810084e-12,
+      "logdet_diagnostic": 0.0,
+      "gaussian_diagnostic": 1.3642420526593924e-12,
+      "final_pose": 4.440892098500626e-16,
+      "final_covariance": 7.047314121155779e-19,
+      "final_pose_error_x_y_heading": 8.881784197001252e-16
+    }
+  }
+}

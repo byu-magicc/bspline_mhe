@@ -188,17 +188,17 @@ The completion gate is satisfied for the saved simulation datasets with known da
 
 Implement fixed-window input-spline MHE in three stages, validating the objective before adding optimization and validating known-landmark disturbance reconstruction before full SLAM. Use the formulation in Section 2 unchanged. `Qc` remains the configured continuous-time stochastic input-noise spectral density; the deterministic spline coefficients represent the unknown mean disturbances and do not replace `Qc`.
 
-#### Stage 4A — Fixed-Window Innovation Objective (Planned)
+#### Stage 4A — Fixed-Window Innovation Objective (Completed)
 
 - Use a single fixed estimation window of length `L` and the existing Stage 3B.1 known-landmark EKF. Represent both input disturbances with the existing uniform, unclamped B-spline adapter, degree `d`, segment count `M`, and coefficient ordering `c = [c_v; c_omega]`.
 - Keep the arrival state and covariance at the beginning of the window fixed for every candidate coefficient vector and during later optimization. Rerun the complete continuous-discrete EKF over the window for each candidate `c`.
 - Define the Section 2.4 innovation-quadratic objective, with `e_k` denoting that section's innovation `r_k`:
 
   ```math
-  J(c)=\sum_{k\in\mathcal V}e_k(c)^\top S_k(c)^{-1}e_k(c).
+  J(c)=\sum_{k\in\mathcal K}e_k(c)^\top S_k(c)^{-1}e_k(c).
   ```
 
-  where `V` contains only valid measurement updates. Exclude masked and invalid observations and their placeholder diagnostics. Use stable linear solves. Do not add a log-determinant term or coefficient regularization in the initial implementation.
+  where `K` is the requested measurement set fixed before candidate evaluation (masked records are excluded). Every requested update must be valid for the candidate to be in the objective's domain. Invalid candidates have explicit rejection status and an undefined objective; do not minimize a partial sum obtained by dropping their invalid records. Exclude masked/invalid placeholders from diagnostic statistics. Use stable linear solves. Do not add a log-determinant term or coefficient regularization in the initial implementation.
 - Preserve sequential measurement updates and fixed known landmark associations. Differentiate through state propagation, covariance propagation, innovations, innovation covariances, Kalman gains, and measurement updates with JAX.
 - Validate the objective against independent numerical calculations, verify correct accumulation of valid measurement contributions, and compare gradients for both coefficient blocks against central finite differences in float64.
 - Stage 4A implements objective evaluation and differentiation only; coefficient optimization starts in Stage 4B.
@@ -207,7 +207,11 @@ Implement fixed-window input-spline MHE in three stages, validating the objectiv
 
 **Stage 4A completion criterion:** the innovation objective is reproducible, correctly accumulates valid measurement contributions, and its JAX gradients agree with central finite differences for both coefficient blocks.
 
-#### Stage 4B — B-Spline Coefficient Optimization (Planned)
+**Completion record:** the fixed known-landmark experiment is implemented and validated in [`artifacts/milestone4a/report.md`](artifacts/milestone4a/report.md), with machine-readable configuration and results in `artifacts/milestone4a/results.json`. The innovation quadratic and log-determinant calculations agree with an independent NumPy evaluation; all requested observation geometries are valid for the reported zero and true candidates; float64 JAX gradients agree with central differences across both coefficient blocks at zero, true-constant, and nonconstant vectors. The Stage 4A suite passed 7 tests and the complete suite passed 205 tests. Stage 4B optimization remained planned at that gate.
+
+**Hardening record:** the fixed requested-set domain, checked Python interfaces, numerical node/posterior validation, independent nonconstant analytic references, gradient decomposition, validity-aware statistics, evidence-based reporting, and stable analytical truth are validated in [`artifacts/milestone4a_hardening/validation.md`](artifacts/milestone4a_hardening/validation.md). The complete hardening regression run passed 233 tests. See [`estimation/STAGE4A.md`](estimation/STAGE4A.md) for the valid-domain and future SciPy integration requirements. Stage 4B remained planned at that gate.
+
+#### Stage 4B — B-Spline Coefficient Optimization (Controlled constant-disturbance gate completed)
 
 - Extend the validated Stage 4A objective using SciPy gradient-based optimization with JAX-computed objective values and gradients. Optimize both linear and angular velocity disturbance coefficient blocks while preserving the fixed arrival prior and known associations.
 - Begin with constant injected disturbances, then extend to smooth time-varying disturbances. Use the zero-disturbance coefficient vector as the initial optimization guess for the first experiment.
@@ -217,6 +221,8 @@ Implement fixed-window input-spline MHE in three stages, validating the objectiv
 - Do not add regularization or alter the objective without first documenting the mathematical motivation and validation results.
 
 **Stage 4B completion criterion:** the optimizer converges reliably in controlled tests and reconstructs identifiable linear and angular velocity disturbances, with documented limitations and failure cases.
+
+**Completion record and scope:** the controlled seed-7 known-landmark constant-disturbance gate is satisfied. Checked SciPy L-BFGS-B fits both constant-constrained and full 14-coefficient parameterizations from zero using exploratory bounds [-0.5,0.5], fixed requested observations/arrival prior, and the unchanged Stage 4A objective. Both fits repeat exactly and reconstruct both disturbance channels more accurately than assuming zero disturbance. Local raw/whitened innovation Jacobians have shape 600 x 14 and numerical rank 14 at zero and the fitted coefficients. The full spline has lower cost but higher reconstruction error than the constant fit; noiseless and tighter-tolerance controls document noise fitting and stopping limitations. All 248 tests passed, and 117 protected files matched preservation checks. See [`artifacts/milestone4b/report.md`](artifacts/milestone4b/report.md), [`artifacts/milestone4b/validation.md`](artifacts/milestone4b/validation.md), and [`estimation/STAGE4B.md`](estimation/STAGE4B.md). This completion covers the specified constant-disturbance experiments; smooth disturbances, validation across seeds and Monte Carlo remain future extensions. Stage 4C remains planned.
 
 #### Stage 4C — Fixed-Window MHE-SLAM (Planned)
 
