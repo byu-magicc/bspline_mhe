@@ -1,0 +1,23 @@
+{
+  "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m pytest -q --junitxml=artifacts/milestone4c/pytest.xml -o junit_family=legacy",
+  "exit_code": 0,
+  "scope": "complete repository suite",
+  "passed": 295,
+  "tests": 295,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": 200.3571413329919,
+  "recorded_at_utc": "2026-11-16T20:13:56.104695+00:00",
+  "implementation_sha256": {
+    "estimation/slam_window_objective.py": "7760ed65ba8795d90ef75d74795dafe24a835c624a990c86ea5eb23561d4e7cb",
+    "simulation/slam_window.py": "a6547f6cff86dba29de45377a7dded894c106cb78e34a7e7fba406b2434f192a",
+    "benchmarks/milestone4c.py": "653df7b87f23e5b8fb37a2a0f3cfdf636d751b9d441bbfe0fd24451e02117d02",
+    "benchmarks/slam_window_plots.py": "bf3a0dc7bff437e0bf23ccd784b1a71047f7210c739871875e0d578a4be960ce",
+    "benchmarks/milestone4c_reporting.py": "fcac5f6a44f6f24cd270667bf9106f4622be7b57b1d46a9bf06bbf7388e22420",
+    "tests/test_slam_window_a.py": "eb8fc35a219b29ec7615c1a2f46c2d6b7ac03d73cd37b3a13c39c3f705a34cf5",
+    "tests/test_slam_window_b.py": "df07bf58d47d390cf3c19a232bcd93827f730bb0a3883bda8bc978a91af9957e",
+    "tests/test_milestone4c_reporting.py": "57c679f226d0ede2db472d3e624eb8fb7f2127f430628d8d688b24658dbd2f11"
+  },
+  "stdout": "........................................................................ [ 24%]\n........................................................................ [ 48%]\n........................................................................ [ 73%]\n........................................................................ [ 97%]\n.......                                                                  [100%]\n- generated xml file: /Users/curtisevans/magicc/bspline_mhe/artifacts/milestone4c/pytest.xml -\n295 passed in 195.77s (0:03:15)\n"
+}

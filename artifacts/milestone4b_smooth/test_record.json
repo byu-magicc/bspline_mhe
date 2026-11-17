@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m pytest -q --junitxml=artifacts/milestone4b_smooth/pytest.xml -o junit_family=legacy",
+  "exit_code": 0,
+  "scope": "complete repository suite",
+  "passed": 270,
+  "tests": 270,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": 140.8203833340085,
+  "recorded_at_utc": "2026-11-16T19:10:48.114715+00:00",
+  "stdout": "........................................................................ [ 26%]\n........................................................................ [ 53%]\n........................................................................ [ 80%]\n......................................................                   [100%]\n- generated xml file: /Users/curtisevans/magicc/bspline_mhe/artifacts/milestone4b_smooth/pytest.xml -\n270 passed in 137.01s (0:02:17)\n"
+}

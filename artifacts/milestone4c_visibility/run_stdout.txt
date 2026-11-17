@@ -1,0 +1,16 @@
+{"experiment": "a_constant", "repeat": 0, "status": "converged", "J": 489.7499663181111, "iterations": 66}
+{"experiment": "a_constant", "repeat": 1, "status": "converged", "J": 489.7499663181111, "iterations": 66}
+{"experiment": "b_constant", "repeat": 0, "status": "converged", "J": 480.7401310383405, "iterations": 57}
+{"experiment": "b_constant", "repeat": 1, "status": "converged", "J": 480.7401310383405, "iterations": 57}
+{"experiment": "a_smooth", "repeat": 0, "status": "converged", "J": 489.5633217646327, "iterations": 60}
+{"experiment": "a_smooth", "repeat": 1, "status": "converged", "J": 489.5633217646327, "iterations": 60}
+{"experiment": "b_smooth", "repeat": 0, "status": "converged", "J": 480.7173462349441, "iterations": 71}
+{"experiment": "b_smooth", "repeat": 1, "status": "converged", "J": 480.7173462349441, "iterations": 71}
+{"experiment": "a_constant", "repeat": 0, "status": "converged", "J": 65.16336075731519, "iterations": 141}
+{"experiment": "a_constant", "repeat": 1, "status": "converged", "J": 65.16336075731519, "iterations": 141}
+{"experiment": "b_constant", "repeat": 0, "status": "converged", "J": 64.56307410629215, "iterations": 119}
+{"experiment": "b_constant", "repeat": 1, "status": "converged", "J": 64.56307410629215, "iterations": 119}
+{"experiment": "a_smooth", "repeat": 0, "status": "converged", "J": 69.91951755936704, "iterations": 131}
+{"experiment": "a_smooth", "repeat": 1, "status": "converged", "J": 69.91951755936704, "iterations": 131}
+{"experiment": "b_smooth", "repeat": 0, "status": "converged", "J": 69.312587751331, "iterations": 80}
+{"experiment": "b_smooth", "repeat": 1, "status": "converged", "J": 69.312587751331, "iterations": 80}

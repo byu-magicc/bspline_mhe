@@ -1,0 +1,57 @@
+{
+  "recorded_at_utc": "2026-11-16T19:12:59.403084+00:00",
+  "verdict": "controlled smooth-disturbance reconstruction validated",
+  "validation_checks": {
+    "independent_truth_refinement": true,
+    "all_primary_candidates_valid": true,
+    "fits_converged_without_invalid_trials": true,
+    "same_requested_observations": true,
+    "objective_numpy_consistency": true,
+    "gradients": true,
+    "sampled_ls_normal_equations": true,
+    "full_spline_reconstructs_both_channels_better_than_zero": true,
+    "full_spline_reduces_residual_cost_with_reference_covariances": true,
+    "paired_repeat_reproducibility": true,
+    "current_complete_test_suite": true
+  },
+  "benchmark_command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.milestone4b_smooth --test-record artifacts/milestone4b_smooth/test_record.json",
+  "benchmark_exit_code": 0,
+  "test_record": "test_record.json",
+  "suite_passed": 270,
+  "suite_exit_code": 0,
+  "unrun_tests": [],
+  "preservation_record": "preservation.json",
+  "protected_files_checked": 135,
+  "all_preserved": true,
+  "serialized_dataset_and_metric_checks_passed": true,
+  "linear_angular_rmse_reduction_percent_vs_constant": [
+    91.69284943486726,
+    74.04413512640903
+  ],
+  "objective_reduction_vs_constant": 7.92649391923328,
+  "ready_for_stage4c_within_controlled_scope": true,
+  "stage4c_implemented": false,
+  "next_required_decision": "Stage 4C arrival and landmark-initialization measurement accounting",
+  "limitations": [
+    "one seed and known landmarks",
+    "full-fit projected gradient exceeds gtol; function-reduction convergence",
+    "heading RMSE is slightly worse than constant fit",
+    "no Monte Carlo or cross-scenario reliability claim",
+    "first linear coefficient is at its lower bound; constraints can affect boundary recovery"
+  ],
+  "implementation_sha256": {
+    "simulation/smooth_unicycle.py": "d23af0f291fcc3d1fc4144253194201fd8dbad2ef246e8e3f7f62f60d9676879",
+    "benchmarks/milestone4b_smooth.py": "64f2a36d8e8e4f84d50fdc5a300ec29713fbd869dfa909d3130e5512f2cff9da",
+    "tests/test_milestone4b_smooth.py": "4e52ecb18083e562ad5165a5d456522ab25bcbb1d08beb1933991368b266a68b",
+    "estimation/STAGE4B_SMOOTH.md": "ade81f6b324c2c2d6ce401c0fc15e6694d67d0b20bf57c02c599dbb7b869476a",
+    "project.md": "fe977beb60bfbb2848170cc93d19f2c085d34f2c4f48300bf30dc97ae7e87034"
+  },
+  "full_spline_active_bounds": [
+    {
+      "coefficient_index": 0,
+      "channel": "linear",
+      "value": -0.5,
+      "side": "lower"
+    }
+  ]
+}

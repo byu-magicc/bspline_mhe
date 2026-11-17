@@ -1,0 +1,147 @@
+{
+  "recorded_at_utc": "2026-11-16T20:19:59.797639+00:00",
+  "verdict": "Stage 4C controlled completion criteria satisfied",
+  "benchmark_command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.milestone4c --test-record artifacts/milestone4c/test_record.json",
+  "benchmark_exit_code": 0,
+  "complete_suite_passed": 295,
+  "test_exit_code": 0,
+  "unrun_tests": [],
+  "completion_checks": {
+    "required_experiments_present": true,
+    "configuration_a_validated_before_b": true,
+    "constant_b_validated_before_smooth": true,
+    "all_numerical_experiment_checks": true,
+    "arrival_and_update_accounting": true,
+    "identical_datasets_across_configurations": true,
+    "independent_truth_validated": true,
+    "all_previous_protected_files_preserved": true,
+    "current_complete_test_suite": true,
+    "all_figures_generated": true
+  },
+  "postserialization_checks": {
+    "a_constant": {
+      "saved_metrics_and_counts_match": true,
+      "association": {
+        "baseline": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 1.0,
+          "initializations": 0,
+          "corrections": 300
+        },
+        "optimized": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 1.0,
+          "initializations": 0,
+          "corrections": 300
+        }
+      },
+      "active_coefficient_bounds": [
+        0,
+        6,
+        13
+      ],
+      "projected_gradient_inf": 0.00016191729778406103
+    },
+    "b_constant": {
+      "saved_metrics_and_counts_match": true,
+      "association": {
+        "baseline": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 0.98,
+          "initializations": 6,
+          "corrections": 294
+        },
+        "optimized": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 0.98,
+          "initializations": 6,
+          "corrections": 294
+        }
+      },
+      "active_coefficient_bounds": [
+        0,
+        6,
+        13
+      ],
+      "projected_gradient_inf": 7.532299294507976e-05
+    },
+    "a_smooth": {
+      "saved_metrics_and_counts_match": true,
+      "association": {
+        "baseline": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 1.0,
+          "initializations": 0,
+          "corrections": 300
+        },
+        "optimized": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 1.0,
+          "initializations": 0,
+          "corrections": 300
+        }
+      },
+      "active_coefficient_bounds": [
+        0,
+        6,
+        13
+      ],
+      "projected_gradient_inf": 0.00028168491026316024
+    },
+    "b_smooth": {
+      "saved_metrics_and_counts_match": true,
+      "association": {
+        "baseline": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 0.98,
+          "initializations": 6,
+          "corrections": 294
+        },
+        "optimized": {
+          "correctness": 1.0,
+          "used_observation_coverage": 1.0,
+          "correction_coverage": 0.98,
+          "initializations": 6,
+          "corrections": 294
+        }
+      },
+      "active_coefficient_bounds": [
+        0,
+        6,
+        13
+      ],
+      "projected_gradient_inf": 0.00011686706898376708
+    }
+  },
+  "protected_files_checked": 163,
+  "all_protected_files_preserved": true,
+  "final_source_matches_test_record": true,
+  "png_pdf_figures": 40,
+  "new_implementation_files": [
+    "estimation/slam_window_objective.py",
+    "simulation/slam_window.py",
+    "benchmarks/milestone4c.py",
+    "benchmarks/milestone4c_reporting.py",
+    "benchmarks/slam_window_plots.py",
+    "estimation/STAGE4C.md",
+    "tests/test_slam_window_a.py",
+    "tests/test_slam_window_b.py",
+    "tests/test_milestone4c_reporting.py"
+  ],
+  "project_status_updated": true,
+  "milestone5_implemented": false,
+  "issues_before_milestone5": [
+    "sliding-window arrival information policy without measurement double counting",
+    "birth/initialization accounting when observations cross the window boundary",
+    "coefficient shift and warm-start policy",
+    "investigate negative smooth empty-map localization/mapping result; do not equate lower cost with accuracy",
+    "conditional EKF covariance omits coefficient uncertainty; active bounds and non-stationary stopping limit inference"
+  ]
+}

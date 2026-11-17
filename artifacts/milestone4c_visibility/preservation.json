@@ -1,0 +1,14 @@
+{
+  "checked_count": 328,
+  "changed": [
+    "simulation/slam_window.py",
+    "benchmarks/slam_window_plots.py",
+    "benchmarks/milestone4c.py"
+  ],
+  "allowed_changes": [
+    "benchmarks/milestone4c.py",
+    "benchmarks/slam_window_plots.py",
+    "simulation/slam_window.py"
+  ],
+  "all_protected_preserved": true
+}

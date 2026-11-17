@@ -1,0 +1,8 @@
+{
+  "eight_cases_present": true,
+  "all_case_numerical_checks": true,
+  "paired_datasets_across_arrivals": true,
+  "regression_datasets_bitwise_identical": true,
+  "record_accounting": true,
+  "all_figures_present": true
+}

@@ -1,0 +1,22 @@
+{
+  "validated_before_smooth_extension": true,
+  "recorded_at_utc": "2026-11-16T20:02:52.395074+00:00",
+  "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m pytest -q tests/test_slam_window_a.py tests/test_slam_window_b.py --junitxml=/tmp/stage4c_ab_pytest.xml",
+  "test_exit_code": 0,
+  "passed": 20,
+  "pytest_elapsed_seconds": 63.87,
+  "benchmark_exit_code": 0,
+  "checks": {
+    "both_repeats_converged": true,
+    "baseline_matches_preserved_filter": true,
+    "objective_matches_numpy": true,
+    "all_coefficient_gradients": true,
+    "exact_reproducibility": true,
+    "all_requested_records_valid": true
+  },
+  "sources_sha256": {
+    "estimation/slam_window_objective.py": "18f46828f63413439e9399ee0b81e0e5b21cf5ba7de847f34e60242504f2e4d7",
+    "benchmarks/milestone4c.py": "c6e6b2383c95eeb15e54165fa770200f28f929ec182ecfc9f2372664e3a563f7",
+    "tests/test_slam_window_b.py": "df07bf58d47d390cf3c19a232bcd93827f730bb0a3883bda8bc978a91af9957e"
+  }
+}
