@@ -1,0 +1,179 @@
+{
+  "completed_utc": "2026-11-17T20:23:54.895761+00:00",
+  "environment": {
+    "python": "3.12.6 (main, Sep  6 2024, 19:03:47) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "platform": "macOS-14.7.6-arm64-arm-64bit",
+    "machine": "arm64",
+    "packages": {
+      "jax": "0.4.35",
+      "jaxlib": "0.4.35",
+      "numpy": "2.0.2",
+      "scipy": "1.14.1",
+      "matplotlib": "3.9.2",
+      "pytest": "8.3.3"
+    }
+  },
+  "commands": [
+    {
+      "phase": "compilation feasibility",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.stage5c_feasibility",
+      "stdout": "feasibility_stdout.txt",
+      "result": "passed; bitwise equivalence on 3 prior windows and one complete solve"
+    },
+    {
+      "phase": "initial focused tests",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m pytest -q tests/test_stage5c_diagnostics.py --junitxml=artifacts/milestone5c/diagnostic_initial.xml -o junit_family=legacy",
+      "stdout": "diagnostic_initial_stdout.txt",
+      "result": "8 passed in 36.31s"
+    },
+    {
+      "phase": "complete regressions",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m pytest -q --junitxml=artifacts/milestone5c/pytest.xml -o junit_family=legacy",
+      "stdout": "pytest_stdout.txt",
+      "result": "389 passed in 388.41s; no failures, errors or skips"
+    },
+    {
+      "phase": "extended deterministic suite",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.milestone5c",
+      "stdout": "extended_stdout.txt",
+      "result": "66 windows; 132 fits; exit 0"
+    },
+    {
+      "phase": "selected full-size gradients and exact repeat",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.milestone5c --validate",
+      "stdout": "saved_validation_stdout.txt",
+      "result": "passed; exit 0"
+    },
+    {
+      "phase": "direct host remeasurement",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.stage5c_host_profile",
+      "stdout": "host_profile_stdout.txt",
+      "result": "all 66 windows bitwise equal on 3 repeats each; exit 0"
+    },
+    {
+      "phase": "final report and serialized audits",
+      "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m benchmarks.milestone5c --report-only",
+      "stdout": "report_stdout.txt",
+      "result": "all audits passed; 34 PNG/PDF pairs; exit 0"
+    }
+  ],
+  "validation": {
+    "all_six_cases": true,
+    "all_eleven_windows": true,
+    "independent_truth_and_coordinates": true,
+    "births_masks_empty_scans": true,
+    "whitened_cost_identity": true,
+    "covariance_finite_symmetric": true,
+    "first_window_reproducible": true,
+    "maximum_independent_truth_difference": 0.0,
+    "maximum_whitened_cost_difference": 2.8990143619012088e-12,
+    "all_previous_files_preserved": true,
+    "regression_tests_passed": true,
+    "selected_sensitivity_FD_and_reproducibility": true,
+    "direct_host_profile_saved_windows_equal": true
+  },
+  "selected_validation": {
+    "checks": {
+      "regression_zero": {
+        "window": 0,
+        "max_absolute_D_error": 1.4742172899095962e-08,
+        "step": 1e-05,
+        "atol": 2e-06,
+        "rtol": 2e-05,
+        "passed": true
+      },
+      "regression_smooth": {
+        "window": 10,
+        "max_absolute_D_error": 2.2040417335840445e-08,
+        "step": 1e-05,
+        "atol": 2e-06,
+        "rtol": 2e-05,
+        "passed": true,
+        "zero_start_exact_reproduction": true
+      },
+      "forward_constant": {
+        "window": 10,
+        "max_absolute_D_error": 7.015854449739993e-09,
+        "step": 1e-05,
+        "atol": 2e-06,
+        "rtol": 2e-05,
+        "passed": true,
+        "feasible_coefficient_probes": [
+          {
+            "coefficient": 6,
+            "delta": 0.1,
+            "cost_absolute_change": 0.0,
+            "q_max_absolute_change": 0.0,
+            "endpoint_pose_change": [
+              0.0031720315023511247,
+              0.004124044968787377,
+              0.0
+            ]
+          },
+          {
+            "coefficient": 13,
+            "delta": 0.1,
+            "cost_absolute_change": 0.0,
+            "q_max_absolute_change": 0.0,
+            "endpoint_pose_change": [
+              -0.0014041106286670768,
+              0.0010551793402111542,
+              0.005208333333333037
+            ]
+          }
+        ]
+      }
+    },
+    "passed": true
+  },
+  "methods": {
+    "projected": {
+      "iterations": 4812,
+      "clipped_updates": 55,
+      "clipped_coefficients": 89,
+      "maximum_clipping_magnitude": 0.3120616341158202,
+      "max_whitening_gradient_identity_error": 3.3434963131462325e-11
+    },
+    "zero": {
+      "iterations": 5618,
+      "clipped_updates": 0,
+      "clipped_coefficients": 0,
+      "maximum_clipping_magnitude": 0.0,
+      "max_whitening_gradient_identity_error": 1.8575696536515807e-11
+    }
+  },
+  "tests": {
+    "passed": 389,
+    "source_files_verified": 36,
+    "changed_since_test": []
+  },
+  "protected_files": {
+    "count": 689,
+    "changed": []
+  },
+  "new_source_sha256": {
+    "benchmarks/milestone5c.py": "6b0135b6a602377e414bfdb68f99367b856790607ebaf346eebeb0d9c42b616c",
+    "benchmarks/stage5c_cache.py": "b45c82192385605f3623b6ec7a82b3351a5e7eace83ed81957f9339501cec647",
+    "benchmarks/stage5c_diagnostics.py": "0a8750796a1a5e2051c48030b6eaca4e89ce000aa9b56fc4b40a3338c00cc47e",
+    "benchmarks/stage5c_feasibility.py": "9d6cb23eb52cf7cb3d41cc36938cb7e71500c7053fee2d6ad4e6f917d06adda6",
+    "benchmarks/stage5c_host_profile.py": "c5dc40bbc545363e09b20f783d664ed1791a6c91b92f534e656f35c4dba81ea8",
+    "benchmarks/stage5c_report.py": "26298220ef4df48c40fabc8cc88be0c49fad209fd36afe557b95800cd01093d2",
+    "estimation/STAGE5C.md": "cb5e192788e4b5455460e9cfcbb33e85651cf79c12ea4373c1d28c97a3b7200d",
+    "tests/test_stage5c_diagnostics.py": "102249234330bf2e83c791cbfc8c510328826a941155f52bc1ff40faabcbfeca"
+  },
+  "artifacts": {
+    "png": 34,
+    "pdf": 34,
+    "optimized_histories": 132,
+    "window_buffers": 66
+  },
+  "limitations": [
+    "Seed 7 only; 11 strongly overlapping windows per scenario; no confidence intervals.",
+    "All solves terminate by function reduction, not projected-gradient gtol.",
+    "Rank-deficient terminal directions in final two forward/constant windows; no silent remedy.",
+    "JAX cache is benchmark-only and version-pinned, not a production API migration.",
+    "cProfile basis frame unresolved; isolated direct host timings explicitly labeled as remeasurements.",
+    "Timing samples include instrumentation/order/OS effects; nested categories must not be summed twice."
+  ],
+  "stopping_condition": "Stage 5C complete. No Monte Carlo, nearest-neighbor association, Victoria Park, tuning, regularization, objective change or major refactor performed."
+}

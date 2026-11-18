@@ -1,0 +1,24 @@
+F............                                                            [100%]
+=================================== FAILURES ===================================
+__________ test_boundary_births_ids_and_covariance_not_double_counted __________
+
+example = (ReplayData(times=array([0.   , 0.025, 0.05 , 0.075, 0.1  , 0.125, 0.15 , 0.175, 0.2  ,
+       0.225, 0.25 , 0.275, 0....<function example.<locals>.<lambda> at 0x10969b6a0>, <estimation.moving_horizon.ForwardArrivals object at 0x108ff7b90>)
+
+    def test_boundary_births_ids_and_covariance_not_double_counted(example):
+        data,initial,command,forward=example
+        for end in (.3,.4,.5):
+            w=forward.window(end,.2)
+            assert w.start==data.times[round((end-.2)/.025)]
+            assert not w.mask[0].any()
+            assert np.all(data.times[w.source_indices]>w.start)
+>           assert np.all(data.times[w.source_indices]<=end)
+E           assert np.False_
+E            +  where np.False_ = <function all at 0x1024b7530>(array([0.125, 0.15 , 0.175, 0.2  , 0.225, 0.25 , 0.275, 0.3  ]) <= 0.3)
+E            +    where <function all at 0x1024b7530> = np.all
+
+tests/test_moving_horizon.py:53: AssertionError
+- generated xml file: /Users/curtisevans/magicc/bspline_mhe/artifacts/milestone5b/implementation_initial.xml -
+=========================== short test summary info ============================
+FAILED tests/test_moving_horizon.py::test_boundary_births_ids_and_covariance_not_double_counted
+1 failed, 12 passed in 128.99s (0:02:08)

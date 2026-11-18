@@ -1,0 +1,54 @@
+{
+  "checks": {
+    "regression_zero": {
+      "window": 0,
+      "max_absolute_D_error": 1.4742172899095962e-08,
+      "step": 1e-05,
+      "atol": 2e-06,
+      "rtol": 2e-05,
+      "passed": true
+    },
+    "regression_smooth": {
+      "window": 10,
+      "max_absolute_D_error": 2.2040417335840445e-08,
+      "step": 1e-05,
+      "atol": 2e-06,
+      "rtol": 2e-05,
+      "passed": true,
+      "zero_start_exact_reproduction": true
+    },
+    "forward_constant": {
+      "window": 10,
+      "max_absolute_D_error": 7.015854449739993e-09,
+      "step": 1e-05,
+      "atol": 2e-06,
+      "rtol": 2e-05,
+      "passed": true,
+      "feasible_coefficient_probes": [
+        {
+          "coefficient": 6,
+          "delta": 0.1,
+          "cost_absolute_change": 0.0,
+          "q_max_absolute_change": 0.0,
+          "endpoint_pose_change": [
+            0.0031720315023511247,
+            0.004124044968787377,
+            0.0
+          ]
+        },
+        {
+          "coefficient": 13,
+          "delta": 0.1,
+          "cost_absolute_change": 0.0,
+          "q_max_absolute_change": 0.0,
+          "endpoint_pose_change": [
+            -0.0014041106286670768,
+            0.0010551793402111542,
+            0.005208333333333037
+          ]
+        }
+      ]
+    }
+  },
+  "passed": true
+}

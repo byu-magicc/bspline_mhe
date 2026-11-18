@@ -1,0 +1,3 @@
+{"window": "regression_constant_000", "passed": true}
+{"window": "regression_constant_001", "passed": true}
+{"window": "forward_constant_002", "passed": true}

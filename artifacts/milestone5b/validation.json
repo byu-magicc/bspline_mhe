@@ -1,0 +1,12 @@
+{
+  "all_schedules_complete": true,
+  "boundary_arrivals_and_masks": true,
+  "birth_accounting": true,
+  "same_map_ids_as_forward": true,
+  "projection_and_clipping": true,
+  "first_fits_identical": true,
+  "all_six_cases_present": true,
+  "all_original_files_preserved": true,
+  "implementation_gate_passed": true,
+  "saved_full_window_gradients_passed": true
+}

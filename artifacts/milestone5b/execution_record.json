@@ -1,0 +1,34 @@
+{
+  "scope": "six seed-7 cases, three full-length updates each, two initializations",
+  "test_passes": 381,
+  "fit_count": 36,
+  "converged_fits": 36,
+  "invalid_trials": 0,
+  "all_saved_checks": {
+    "all_schedules_complete": true,
+    "boundary_arrivals_and_masks": true,
+    "birth_accounting": true,
+    "same_map_ids_as_forward": true,
+    "projection_and_clipping": true,
+    "first_fits_identical": true,
+    "all_six_cases_present": true,
+    "all_original_files_preserved": true,
+    "implementation_gate_passed": true,
+    "saved_full_window_gradients_passed": true
+  },
+  "protected_files_checked": 556,
+  "all_original_files_preserved": true,
+  "final_core_sources_match_complete_test_gate": true,
+  "figures": 24,
+  "environment": {
+    "python": "3.12.6",
+    "jax": "0.4.35",
+    "backend": "cpu",
+    "jax_enable_x64": true,
+    "numpy": "2.0.2",
+    "scipy": "1.14.1"
+  },
+  "monte_carlo_run": false,
+  "nearest_neighbor_added": false,
+  "victoria_park_work": false
+}

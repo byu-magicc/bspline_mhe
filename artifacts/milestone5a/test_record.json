@@ -1,0 +1,22 @@
+{
+  "command": "PYTHONPATH=build/bsplines_library MPLCONFIGDIR=/tmp/bspline_mhe_mpl python3 -B -m pytest -q tests/test_warm_start_projection.py tests/test_uniform_basis.py tests/test_slam_window_a.py tests/test_slam_window_b.py tests/test_milestone4c_reporting.py tests/test_slam_visibility.py --junitxml=artifacts/milestone5a/pytest.xml -o junit_family=legacy",
+  "scope": "all Stage 5A projection tests, existing uniform basis tests, all Stage 4C and visibility regression tests",
+  "exit_code": 0,
+  "counts": {
+    "tests": 188,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "passed": 188,
+  "wall_seconds": 85.92496245901566,
+  "source_sha256": {
+    "splines/warm_start.py": "b055f2dbffe3d39b26f470690077e3ac47b77fd47bace165ac37ce7ae5776f8f",
+    "tests/test_warm_start_projection.py": "129a96254203d0fd1bc0f087663c997e72053bcbfbba2572e80751eccfc3b54e",
+    "tests/test_uniform_basis.py": "d96dc30c6e68940fedb628866336eb701984e1ba5aab633f7e7064509ab41645",
+    "tests/test_slam_window_a.py": "eb8fc35a219b29ec7615c1a2f46c2d6b7ac03d73cd37b3a13c39c3f705a34cf5",
+    "tests/test_slam_window_b.py": "df07bf58d47d390cf3c19a232bcd93827f730bb0a3883bda8bc978a91af9957e",
+    "tests/test_milestone4c_reporting.py": "57c679f226d0ede2db472d3e624eb8fb7f2127f430628d8d688b24658dbd2f11",
+    "tests/test_slam_visibility.py": "d8c01c5fbc04a4a9c85ee44e6188c35044d9218bd41017981ec75e238804bd9a"
+  }
+}

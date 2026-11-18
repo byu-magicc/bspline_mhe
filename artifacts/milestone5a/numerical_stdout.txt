@@ -1,0 +1,1 @@
+{"checks": {"tests_passed": true, "all_existing_files_preserved": true, "normal_equations": true, "constants": true, "projection_no_worse_than_retained": true, "quadrature_exact_order": true, "stage4c_coefficients_examined": true, "ill_conditioning_reported": true}, "stage5a_gate_satisfied": true}
